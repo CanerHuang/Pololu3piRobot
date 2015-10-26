@@ -24,12 +24,11 @@
 
 #include "bargraph.h"
 
-#include <pololu/orangutan.h>   // ******************************* 103/10/14
-const unsigned char pulseInPins[] = { IO_D0 };   // ******************************* 103/10/14
-const unsigned char trigPins[] = { IO_D1 };   // ******************************* 103/10/14
-struct PulseInputStruct pulse_info;   // ******************************* 103/10/14
-unsigned int USenable = 0;   // ******************************* 103/10/14
-
+#include <pololu/orangutan.h>   
+const unsigned char pulseInPins[] = { IO_D0 };  
+const unsigned char trigPins[] = { IO_D1 };  
+struct PulseInputStruct pulse_info;   
+unsigned int USenable = 0;  
 // Introductory messages.  The "PROGMEM" identifier causes the data to
 // go into program space.
 const char welcome_line1[] PROGMEM = " UCH";
