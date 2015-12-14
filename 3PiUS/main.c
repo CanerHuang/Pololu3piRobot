@@ -10,6 +10,7 @@
 #include <avr/pgmspace.h>
 
 #include "bargraph.h"
+#include "follow-segment.h"
 const char welcome_line1[] PROGMEM = " UCH";
 const char welcome_line2[] PROGMEM = "3\xf7 Robot";
 const char demo_name_line1[] PROGMEM = "Line";

@@ -58,13 +58,9 @@ void Obstacle_Avoidance(int max,int normal_true,int long_line,int short_line)
  * Ultrasonic_Sensor(感應器存放位址);
  *
  */
-
 void Ultrasonic_Sensor(int *US_Sensor)
 {
-   // pulse_in_start(pulseInPins, 1);		// start measuring pulses on PD0    // ******************************* 103/10/14
-//##########################  超音波檢查  #############################
-
-    if (USenable < 1)
+    if (USenable != 1)
 	{
 	   USenable = 1;
        pulse_in_start(pulseInPins, 1);		// start measuring pulses on PD0
@@ -72,12 +68,7 @@ void Ultrasonic_Sensor(int *US_Sensor)
 	   // generate our servo pulse output on PD1.
 	   // high 10 us at least, 1 tick = 0.4us
 	   set_digital_output(IO_D1, HIGH);
-	   while ((get_ticks() - time) <= 30UL)
-		{
-		//	wait for 12us;
-		
-		}
-
+	   while ((get_ticks() - time) <= 30UL);
        set_digital_output(IO_D1,LOW );
 	   echotime = get_ticks();
 	}
@@ -99,8 +90,40 @@ void Ultrasonic_Sensor(int *US_Sensor)
 
     	}
 	}
+}
 
-//##########################  超音波檢查  #############################
+int UltrasonicSensor(int US_Sensor)
+{
+	if (USenable != 1)
+	{
+		USenable = 1;
+		pulse_in_start(pulseInPins, 1);		// start measuring pulses on PD0
+		unsigned long time = get_ticks();
+		// generate our servo pulse output on PD1.
+		// high 10 us at least, 1 tick = 0.4us
+		set_digital_output(IO_D1, HIGH);
+		while ((get_ticks() - time) <= 30UL);
+		set_digital_output(IO_D1,LOW );
+		echotime = get_ticks();
+	}
+	else
+	{
+		if (pulse_to_microseconds((get_ticks() - echotime) ) > 30000)  // delay 30ms
+		{
+			USenable = 0;
+			get_pulse_info(0, &pulse_info);  // get pulse info for D0
+			if (pulse_to_microseconds(pulse_info.lastHighPulse) > 28000)
+			{
+				US_Sensor = 255;
+			}
+			else
+			{
+				int dis = pulse_to_microseconds(pulse_info.lastHighPulse)*34000/2000000;
+				US_Sensor = dis;
+			}
+		}
+	}
+	return US_Sensor;
 }
 /**
  * Reduce_Interference(unsigned long stime,int *US_Sensor_Value);
