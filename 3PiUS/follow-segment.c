@@ -1,10 +1,5 @@
 /*
  * follow_segment.c
- *
- * This file just contains the follow_segment() function, which causes
- * 3pi to follow a segment of the maze until it detects an
- * intersection, a dead end, or the finish.
- *
  */
 
 #include <pololu/3pi.h>
@@ -15,12 +10,12 @@ unsigned long echotime = 0;
 unsigned char USenable = 1;   // ******************************* 103/10/14
 struct PulseInputStruct pulse_info;   // ******************************* 103/10/14
 
-/**
+/*
  *
  * Obstacle_Avoidance();
- * °ò¥»Á×»Ù°Æµ{¦¡
- * ½d¨Ò¡G
- * Obstacle_Avoidance(³t«×,ÂàÅs®É¶¡,µuÃä®É¶¡,ªøÃä®É¶¡);
+ * åŸºæœ¬é¿éšœå‰¯ç¨‹å¼
+ * ç¯„ä¾‹ï¼š
+ * Obstacle_Avoidance(é€Ÿåº¦,è½‰å½æ™‚é–“,çŸ­é‚Šæ™‚é–“,é•·é‚Šæ™‚é–“);
  *
  */
 void Obstacle_Avoidance(int max,int normal_true,int long_line,int short_line)
@@ -50,17 +45,17 @@ void Obstacle_Avoidance(int max,int normal_true,int long_line,int short_line)
 
 
 /**
- *
  * Ultrasonic_Sensor(int &Sensor_Value);
- * ¬O¤@­Ó°ò¥»ªº¶W­µªiªº°Æµ{¦¡
- * ¥i¥H³z¹L©I¥s³o­Ó°Æµ{¦¡¨Ó¨ú±o¶W­µªi¼Æ­È
- * ½d¨Ò¡G
- * Ultrasonic_Sensor(·PÀ³¾¹¦s©ñ¦ì§});
- *
+ * æ˜¯ä¸€å€‹åŸºæœ¬çš„è¶…éŸ³æ³¢çš„å‰¯ç¨‹å¼
+ * å¯ä»¥é€éå‘¼å«é€™å€‹å‰¯ç¨‹å¼ä¾†å–å¾—è¶…éŸ³æ³¢æ•¸å€¼
+ * ç¯„ä¾‹ï¼š
+ * Ultrasonic_Sensor(æ„Ÿæ‡‰å™¨å­˜æ”¾ç©ºé–“);
  */
+
 void Ultrasonic_Sensor(int *US_Sensor)
 {
-    if (USenable != 1)
+   // pulse_in_start(pulseInPins, 1);		// start measuring pulses on PD0    // ******************************* 103/10/14
+    if (USenable < 1)
 	{
 	   USenable = 1;
        pulse_in_start(pulseInPins, 1);		// start measuring pulses on PD0
@@ -68,7 +63,12 @@ void Ultrasonic_Sensor(int *US_Sensor)
 	   // generate our servo pulse output on PD1.
 	   // high 10 us at least, 1 tick = 0.4us
 	   set_digital_output(IO_D1, HIGH);
-	   while ((get_ticks() - time) <= 30UL);
+	   while ((get_ticks() - time) <= 30UL)
+		{
+		//	wait for 12us;
+		
+		}
+
        set_digital_output(IO_D1,LOW );
 	   echotime = get_ticks();
 	}
@@ -91,45 +91,11 @@ void Ultrasonic_Sensor(int *US_Sensor)
     	}
 	}
 }
-
-int UltrasonicSensor(int US_Sensor)
-{
-	if (USenable != 1)
-	{
-		USenable = 1;
-		pulse_in_start(pulseInPins, 1);		// start measuring pulses on PD0
-		unsigned long time = get_ticks();
-		// generate our servo pulse output on PD1.
-		// high 10 us at least, 1 tick = 0.4us
-		set_digital_output(IO_D1, HIGH);
-		while ((get_ticks() - time) <= 30UL);
-		set_digital_output(IO_D1,LOW );
-		echotime = get_ticks();
-	}
-	else
-	{
-		if (pulse_to_microseconds((get_ticks() - echotime) ) > 30000)  // delay 30ms
-		{
-			USenable = 0;
-			get_pulse_info(0, &pulse_info);  // get pulse info for D0
-			if (pulse_to_microseconds(pulse_info.lastHighPulse) > 28000)
-			{
-				US_Sensor = 255;
-			}
-			else
-			{
-				int dis = pulse_to_microseconds(pulse_info.lastHighPulse)*34000/2000000;
-				US_Sensor = dis;
-			}
-		}
-	}
-	return US_Sensor;
-}
 /**
  * Reduce_Interference(unsigned long stime,int *US_Sensor_Value);
- * ´î¤Ö¤zÂZªº°Æµ{¦¡
- * ½d¨Ò¡G
- * Reduce_Interference(´î¤Ö¤zÂZ®É¶¡,·PÀ³¾¹¦s©ñ¦ì§});
+ * æ¸›å°‘å¹²æ“¾çš„å‰¯ç¨‹å¼
+ * ç¯„ä¾‹ï¼š
+ * Reduce_Interference(æ¸›å°‘å¹²æ“¾æ™‚é–“,æ„Ÿæ‡‰å™¨å­˜æ”¾ä½å€);
  */
  void Reduce_Interference(unsigned long stime,int *US_Sensor_Value)
  {
@@ -142,9 +108,9 @@ int UltrasonicSensor(int US_Sensor)
  }
 /**
  * follow_line(int start_sleep,int max_sleep,unsigned long stime, double kp, double ki, double kd, unsigned char distance,unsigned long Reduce_Interference_Time);
- * ¬O¤@­Ó°ò¥»ªº´`½uªº°Æµ{¦¡
- * ½d¨Ò¡G
- * follow_line(°_©l³t«×/³Ì¤p¼Æ«×,³Ì°ª³t«×,·Ù¨®®É¶¡,¤ñ¨Ò¶µ,¿n¤À¶µ,·L¤À¶µ,Á×»Ù¶ZÂ÷,´î¤Ö¤zÂZ®É¶¡);
+ * æ˜¯ä¸€å€‹åŸºæœ¬çš„å¾ªç·šçš„å‰¯ç¨‹å¼
+ * ç¯„ä¾‹ï¼š
+ * follow_line(èµ·å§‹é€Ÿåº¦/æœ€å°æ•¸åº¦,æœ€é«˜é€Ÿåº¦,ç…è»Šæ™‚é–“,æ¯”ä¾‹é …,ç©åˆ†é …,å¾®åˆ†é …,é¿éšœè·é›¢,æ¸›å°‘å¹²æ“¾æ™‚é–“);
  */
 
 void follow_line(int start_sleep,int max_sleep,unsigned long stime, int kp, int ki, double kd, unsigned char distance,unsigned long Reduce_Interference_Time)
@@ -157,11 +123,6 @@ void follow_line(int start_sleep,int max_sleep,unsigned long stime, int kp, int 
 	unsigned long stoptime = get_ms() + stime;
 	while(1)
 	{
-		// Normally, we will be following a line.  The code below is
-		// similar to the 3pi-linefollower-pid example, but the maximum
-		// speed is turned down to 60 for reliability.
-
-		// Get the position of the line.
 		if( get_ms() >= stoptime )
 		{
 			max = start_sleep;
@@ -172,27 +133,11 @@ void follow_line(int start_sleep,int max_sleep,unsigned long stime, int kp, int 
 		}
 		unsigned int sensors[5];
 		unsigned int position = read_line_white(sensors,IR_EMITTERS_ON);
-
-		// The "proportional" term should be 0 when we are on the line.
 		int proportional = ((int)position) - 2000;
-
-		// Compute the derivative (change) and integral (sum) of the
-		// position.
 		int derivative = proportional - last_proportional;
 		integral += proportional;
-
-		// Remember the last position.
 		last_proportional = proportional;
-
-		// Compute the difference between the two motor power settings,
-		// m1 - m2.  If this is a positive number the robot will turn
-		// to the left.  If it is a negative number, the robot will
-		// turn to the right, and the magnitude of the number determines
-		// the sharpness of the turn.
 		int power_difference = proportional/kp + integral/ki + (double)derivative*kd;
-
-		// Compute the actual motor settings.  We never set either motor
-		// to a negative value.
 		if(power_difference > max)
 			power_difference = max;
 		if(power_difference < -max)
@@ -209,8 +154,8 @@ void follow_line(int start_sleep,int max_sleep,unsigned long stime, int kp, int 
 			Reduce_Interference(Reduce_Interference_Time,&US_Sensor_Value);
 			if(US_Sensor_Value < distance && US_Sensor_Value != 0)
 			{
-				//Obstacle_Avoidance(³t«×,ÂàÅs®É¶¡,µuÃä®É¶¡,ªøÃä®É¶¡);
-				Obstacle_Avoidance(30,280,600,750);//Á×»Ù°Æµ{¦¡°õ¦æÂI
+				//Obstacle_Avoidance(é€Ÿåº¦,è½‰å½æ™‚é–“,çŸ­é‚Šæ™‚é–“,é•·é‚Šæ™‚é–“);
+				Obstacle_Avoidance(30,280,600,750);//é¿éšœå‰¯ç¨‹å¼åŸ·è¡Œé»
 			}
 			Reduce_Interference(Reduce_Interference_Time,&US_Sensor_Value);
 		}
@@ -221,15 +166,20 @@ void follow_segment()
 
 	int US_Sensor_Value=0;
 
-
 	while(1)
 	{
-
 		Ultrasonic_Sensor(&US_Sensor_Value);
-		set_motors(50,50);//ª½¨«
-		if(US_Sensor_Value != 0 && US_Sensor_Value <30)//¤p©ó30cm¶}©lÁ×»Ù
+		
+		clear();
+		print_long(US_Sensor_Value);
+		lcd_goto_xy(0,1);
+
+		delay_ms(100);
+		/*
+		set_motors(50,50);//ç›´èµ°
+		if(US_Sensor_Value != 0 && US_Sensor_Value <30)//å°æ–¼30cmé–‹å§‹é¿éšœ
 		{
-			//Á×»Ùµ{¦¡
+			//é¿éšœç¨‹å¼
 			set_motors(50,-50);
 			delay_ms(500);
 			set_motors(50,50);
@@ -239,6 +189,7 @@ void follow_segment()
 			set_motors(50,-50);
 			delay_ms(500);
 		}
+		*/
 	}
 
 }
@@ -248,4 +199,4 @@ void follow_segment()
 // c-basic-offset: 4 **
 // tab-width: 4 **
 // indent-tabs-mode: t **
-// end: **
+// end: *
