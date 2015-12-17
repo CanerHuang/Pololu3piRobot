@@ -163,34 +163,12 @@ void follow_line(int start_sleep,int max_sleep,unsigned long stime, int kp, int 
 }
 void follow_segment()
 {
-
 	int US_Sensor_Value=0;
-
+	Ultrasonic_Sensor(&US_Sensor_Value);
 	while(1)
 	{
-		Ultrasonic_Sensor(&US_Sensor_Value);
-		
-		clear();
-		print_long(US_Sensor_Value);
-		lcd_goto_xy(0,1);
-
-		delay_ms(100);
-		/*
-		set_motors(50,50);//直走
-		if(US_Sensor_Value != 0 && US_Sensor_Value <30)//小於30cm開始避障
-		{
-			//避障程式
-			set_motors(50,-50);
-			delay_ms(500);
-			set_motors(50,50);
-			delay_ms(800);
-			set_motors(-50,50);
-			delay_ms(500);
-			set_motors(50,-50);
-			delay_ms(500);
-		}
-		*/
 	}
+	while(1);
 
 }
 
