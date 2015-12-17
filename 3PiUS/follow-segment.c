@@ -108,29 +108,21 @@ void Ultrasonic_Sensor(int *US_Sensor)
  }
 /**
  * follow_line(int start_sleep,int max_sleep,unsigned long stime, double kp, double ki, double kd, unsigned char distance,unsigned long Reduce_Interference_Time);
+ * follow_line();
  * 是一個基本的循線的副程式
  * 範例：
  * follow_line(起始速度/最小數度,最高速度,煞車時間,比例項,積分項,微分項,避障距離,減少干擾時間);
  */
 
-void follow_line(int start_sleep,int max_sleep,unsigned long stime, int kp, int ki, double kd, unsigned char distance,unsigned long Reduce_Interference_Time)
+void follow_line(int start_sleep, int kp, int ki, double kd, unsigned char distance,unsigned long Reduce_Interference_Time)
 {
 	int US_Sensor_Value=0;
 	int last_proportional = 0;
 	long integral=0;
 	clear();  // clear LCD     // ******************************* 103/10/14
 	int max = start_sleep;
-	unsigned long stoptime = get_ms() + stime;
 	while(1)
 	{
-		if( get_ms() >= stoptime )
-		{
-			max = start_sleep;
-		}
-		else
-		{
-			max = max_sleep;
-		}
 		unsigned int sensors[5];
 		unsigned int position = read_line_white(sensors,IR_EMITTERS_ON);
 		int proportional = ((int)position) - 2000;
@@ -164,9 +156,10 @@ void follow_line(int start_sleep,int max_sleep,unsigned long stime, int kp, int 
 void follow_segment()
 {
 	int US_Sensor_Value=0;
-	Ultrasonic_Sensor(&US_Sensor_Value);
 	while(1)
 	{
+		follow_line(60,10,10000,3/2,25,0);
+
 	}
 	while(1);
 
